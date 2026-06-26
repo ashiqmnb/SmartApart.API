@@ -1,4 +1,3 @@
-
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Mapster;
@@ -9,7 +8,9 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using SmartApart.API.Data;
 using SmartApart.API.Filters;
+using SmartApart.API.Interfaces.Services;
 using SmartApart.API.Middleware;
+using SmartApart.API.Services;
 using System.Text;
 
 namespace SmartApart.API
@@ -55,6 +56,8 @@ namespace SmartApart.API
             });
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<IJwtService, JwtService>();
 
             // Controllers + Validation Filter
             builder.Services.AddControllers(options =>
