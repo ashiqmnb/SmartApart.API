@@ -30,18 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="DTOs\Maintenance\" />
     <Folder Include="DTOs\Complaints\" />
     <Folder Include="DTOs\Announcements\" />
     <Folder Include="DTOs\Amenities\" />
     <Folder Include="DTOs\Notifications\" />
-    <Folder Include="DTOs\Visitors\" />
-    <Folder Include="DTOs\Residents\" />
-    <Folder Include="Interfaces\Repositories\" />
     <Folder Include="Extensions\" />
     <Folder Include="Mappings\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

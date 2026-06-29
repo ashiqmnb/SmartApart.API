@@ -8,8 +8,10 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using SmartApart.API.Data;
 using SmartApart.API.Filters;
+using SmartApart.API.Interfaces.Repositories;
 using SmartApart.API.Interfaces.Services;
 using SmartApart.API.Middleware;
+using SmartApart.API.Repositories;
 using SmartApart.API.Services;
 using System.Text;
 
@@ -57,7 +59,18 @@ namespace SmartApart.API
 
             builder.Services.AddAuthorization();
 
+
             builder.Services.AddScoped<IJwtService, JwtService>();
+
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IResidentRepository, ResidentRepository>();
+            builder.Services.AddScoped<IVisitorRepository, VisitorRepository>();
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IResidentService, ResidentService>();
+
 
             // Controllers + Validation Filter
             builder.Services.AddControllers(options =>

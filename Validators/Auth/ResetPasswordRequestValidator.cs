@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SmartApart.API.DTOs.Auth;
 
-namespace SmartApart.API.Validators
+namespace SmartApart.API.Validators.Auth
 {
     public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequestDto>
     {
