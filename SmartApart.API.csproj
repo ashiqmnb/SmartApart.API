@@ -30,9 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Notifications\" />
     <Folder Include="Extensions\" />
     <Folder Include="Mappings\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="firebase-adminsdk.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

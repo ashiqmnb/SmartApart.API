@@ -1,5 +1,7 @@
+using FirebaseAdmin;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Google.Apis.Auth.OAuth2;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ using SmartApart.API.Interfaces.Services;
 using SmartApart.API.Middleware;
 using SmartApart.API.Repositories;
 using SmartApart.API.Services;
+using SmartApart.API.Services.BackgroundServices;
 using System.Text;
 
 namespace SmartApart.API
@@ -62,10 +65,24 @@ namespace SmartApart.API
                 };
             });
 
+            // Firebase Admin SDK initialization
+            var firebaseCredPath = builder.Configuration["Firebase:CredentialsPath"];
+            if (!string.IsNullOrWhiteSpace(firebaseCredPath) && File.Exists(firebaseCredPath))
+            {
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = GoogleCredential.FromFile(firebaseCredPath)
+                });
+                Console.WriteLine("? Firebase initialized successfully.");
+            }
+            else
+            {
+                Console.WriteLine("?? Firebase credentials file not found — FCM will not work.");
+            }
+
             builder.Services.AddAuthorization();
 
-            builder.Services.AddScoped<IJwtService, JwtService>();
-
+            //Repositories
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IResidentRepository, ResidentRepository>();
@@ -74,7 +91,11 @@ namespace SmartApart.API
             builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
             builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
             builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
+            builder.Services.AddScoped<IFcmTokenRepository, FcmTokenRepository>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
+            //Services
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IResidentService, ResidentService>();
@@ -84,6 +105,11 @@ namespace SmartApart.API
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
             builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
             builder.Services.AddScoped<IAmenityService, AmenityService>();
+            builder.Services.AddScoped<IFcmService, FcmService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
+            //Other Services
+            builder.Services.AddHostedService<AnnouncementPublisherService>();  
 
             // Controllers + Validation Filter
             builder.Services.AddControllers(options =>

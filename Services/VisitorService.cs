@@ -11,16 +11,19 @@ namespace SmartApart.API.Services
     {
         private readonly IVisitorRepository _visitorRepo;
         private readonly IResidentRepository _residentRepo;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<VisitorService> _logger;
 
         public VisitorService(
             IVisitorRepository visitorRepo,
             IResidentRepository residentRepo,
-            ILogger<VisitorService> logger)
+            ILogger<VisitorService> logger,
+            INotificationService notificationService)
         {
             _visitorRepo = visitorRepo;
             _residentRepo = residentRepo;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
 
@@ -52,6 +55,12 @@ namespace SmartApart.API.Services
 
                 // TODO: Dispatch FCM to resident (Phase 1.7) — type: VisitorApproval, referenceId: visitor.Id
                 _logger.LogInformation("Visitor {VisitorId} registered for resident {ResidentId}", visitor.Id, dto.ResidentId);
+                await _notificationService.CreateAndSendAsync(
+                    visitor.Resident.UserId,
+                    "New Visitor Request",
+                    $"{visitor.VisitorName} is here to see you. Purpose: {visitor.Purpose}",
+                    "VisitorApproval",
+                    visitor.Id);
 
                 var saved = await _visitorRepo.GetByIdAsync(visitor.Id)
                     ?? throw new AppException("Failed to load registered visitor.", 500);
@@ -171,6 +180,12 @@ namespace SmartApart.API.Services
 
                 // TODO: Dispatch FCM to security officer (Phase 1.7)
                 _logger.LogInformation("Visitor {VisitorId} approved by {UserId}", visitorId, callerUserId);
+                await _notificationService.CreateAndSendAsync(
+                    visitor.SecurityId,
+                    "Visitor Approved",
+                    $"{visitor.VisitorName} has been approved by the resident.",
+                    "VisitorApproval",
+                    visitor.Id);
 
                 return MapToDetailDto(visitor);
             }
@@ -210,6 +225,12 @@ namespace SmartApart.API.Services
 
                 // TODO: Dispatch FCM to security officer (Phase 1.7)
                 _logger.LogInformation("Visitor {VisitorId} rejected by {UserId}", visitorId, callerUserId);
+                await _notificationService.CreateAndSendAsync(
+                    visitor.SecurityId,
+                    "Visitor Rejected",
+                    $"{visitor.VisitorName} has been rejected by the resident.",
+                    "VisitorApproval",
+                    visitor.Id);
 
                 return MapToDetailDto(visitor);
             }

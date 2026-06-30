@@ -11,6 +11,7 @@ namespace SmartApart.API.Services
     {
         private readonly IMaintenanceRepository _maintenanceRepo;
         private readonly IResidentRepository _residentRepo;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<MaintenanceService> _logger;
 
         // Allowed forward transitions — no skipping
@@ -26,11 +27,13 @@ namespace SmartApart.API.Services
         public MaintenanceService(
             IMaintenanceRepository maintenanceRepo,
             IResidentRepository residentRepo,
-            ILogger<MaintenanceService> logger)
+            ILogger<MaintenanceService> logger,
+            INotificationService notificationService)
         {
             _maintenanceRepo = maintenanceRepo;
             _residentRepo = residentRepo;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         // ── Create Request ───────────────────────────────────────────
@@ -226,6 +229,12 @@ namespace SmartApart.API.Services
 
                 // TODO: FCM to resident (Phase 1.7)
                 _logger.LogInformation("Maintenance request {RequestId} assigned to {StaffId}", requestId, dto.AssignedTo);
+                await _notificationService.CreateAndSendAsync(
+                    request.Resident.UserId,
+                    "Maintenance Request Assigned",
+                    $"Your request '{request.Title}' has been assigned to staff.",
+                    "MaintenanceUpdate",
+                    request.Id);
 
                 var saved = await _maintenanceRepo.GetByIdAsync(requestId)
                     ?? throw new AppException("Failed to load updated request.", 500);
@@ -272,6 +281,12 @@ namespace SmartApart.API.Services
 
                 // TODO: FCM to resident (Phase 1.7)
                 _logger.LogInformation("Maintenance request {RequestId} status updated to {Status}", requestId, newStatus);
+                await _notificationService.CreateAndSendAsync(
+                    request.Resident.UserId,
+                    "Maintenance Status Updated",
+                    $"Your request '{request.Title}' is now {request.Status}.",
+                    "MaintenanceUpdate",
+                    request.Id);
 
                 var saved = await _maintenanceRepo.GetByIdAsync(requestId)
                     ?? throw new AppException("Failed to load updated request.", 500);

@@ -11,16 +11,19 @@ namespace SmartApart.API.Services
     {
         private readonly IAnnouncementRepository _announcementRepo;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IFcmService _fcmService;
         private readonly ILogger<AnnouncementService> _logger;
 
         public AnnouncementService(
             IAnnouncementRepository announcementRepo,
             ICloudinaryService cloudinaryService,
-            ILogger<AnnouncementService> logger)
+            ILogger<AnnouncementService> logger,
+            IFcmService fcmService)
         {
             _announcementRepo = announcementRepo;
             _cloudinaryService = cloudinaryService;
             _logger = logger;
+            _fcmService = fcmService;
         }
 
         // ── Create ───────────────────────────────────────────────────
@@ -50,7 +53,14 @@ namespace SmartApart.API.Services
 
                 if (isImmediate)
                 {
-                    // TODO: FCM broadcast to all users (Phase 1.7)
+                    var data = new Dictionary<string, string>
+                    {
+                        { "type", "Announcement" },
+                        { "referenceId", announcement.Id.ToString() }
+                    };
+
+                    await _fcmService.SendToTopicAsync("all", announcement.Title, announcement.Body, data);
+
                     _logger.LogInformation("Announcement {Id} published immediately.", announcement.Id);
                 }
                 else
@@ -279,7 +289,14 @@ namespace SmartApart.API.Services
                 await _announcementRepo.UpdateAsync(announcement);
                 await _announcementRepo.SaveChangesAsync();
 
-                // TODO: FCM broadcast to all users (Phase 1.7)
+                var data = new Dictionary<string, string>
+                {
+                    { "type", "Announcement" },
+                    { "referenceId", announcement.Id.ToString() }
+                };
+
+                await _fcmService.SendToTopicAsync("all", announcement.Title, announcement.Body, data);
+
                 _logger.LogInformation("Announcement {Id} manually published.", announcementId);
 
                 return MapToDetailDto(announcement);

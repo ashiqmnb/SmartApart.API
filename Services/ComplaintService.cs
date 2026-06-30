@@ -11,6 +11,7 @@ namespace SmartApart.API.Services
     {
         private readonly IComplaintRepository _complaintRepo;
         private readonly IResidentRepository _residentRepo;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<ComplaintService> _logger;
 
         // Allowed forward transitions — no skipping
@@ -25,11 +26,13 @@ namespace SmartApart.API.Services
         public ComplaintService(
             IComplaintRepository complaintRepo,
             IResidentRepository residentRepo,
-            ILogger<ComplaintService> logger)
+            ILogger<ComplaintService> logger,
+            INotificationService notificationService)
         {
             _complaintRepo = complaintRepo;
             _residentRepo = residentRepo;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         // ── Create Complaint ─────────────────────────────────────────
@@ -228,6 +231,12 @@ namespace SmartApart.API.Services
 
                 // TODO: FCM to resident (Phase 1.7)
                 _logger.LogInformation("Complaint {ComplaintId} status updated to {Status}", complaintId, newStatus);
+                await _notificationService.CreateAndSendAsync(
+                    complaint.Resident.UserId,
+                    "Complaint Status Updated",
+                    $"Your complaint '{complaint.Title}' is now {complaint.Status}.",
+                    "ComplaintUpdate",
+                    complaint.Id);
 
                 var saved = await _complaintRepo.GetByIdAsync(complaintId)
                     ?? throw new AppException("Failed to load updated complaint.", 500);
