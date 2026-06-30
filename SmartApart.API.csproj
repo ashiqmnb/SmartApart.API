@@ -30,8 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Announcements\" />
-    <Folder Include="DTOs\Amenities\" />
     <Folder Include="DTOs\Notifications\" />
     <Folder Include="Extensions\" />
     <Folder Include="Mappings\" />

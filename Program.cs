@@ -64,7 +64,6 @@ namespace SmartApart.API
 
             builder.Services.AddAuthorization();
 
-
             builder.Services.AddScoped<IJwtService, JwtService>();
 
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -73,6 +72,8 @@ namespace SmartApart.API
             builder.Services.AddScoped<IVisitorRepository, VisitorRepository>();
             builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
             builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
+            builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+            builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
@@ -81,6 +82,8 @@ namespace SmartApart.API
             builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
             builder.Services.AddScoped<IComplaintService, ComplaintService>();
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+            builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+            builder.Services.AddScoped<IAmenityService, AmenityService>();
 
             // Controllers + Validation Filter
             builder.Services.AddControllers(options =>
