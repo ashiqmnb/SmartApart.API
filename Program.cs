@@ -70,6 +70,7 @@ namespace SmartApart.API
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IResidentService, ResidentService>();
+            builder.Services.AddScoped<IVisitorService, VisitorService>();
 
 
             // Controllers + Validation Filter
