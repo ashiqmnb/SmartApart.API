@@ -41,7 +41,8 @@ namespace SmartApart.API.Controllers
 
         // PATCH api/profile/photo
         [HttpPatch("photo")]
-        public async Task<IActionResult> UpdatePhoto([FromForm] IFormFile photo)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdatePhoto(IFormFile photo)
         {
             var userId = GetUserId();
             var result = await _userService.UpdateProfilePhotoAsync(userId, photo);

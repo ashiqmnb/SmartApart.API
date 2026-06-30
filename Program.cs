@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using SmartApart.API.Common;
 using SmartApart.API.Data;
 using SmartApart.API.Filters;
 using SmartApart.API.Interfaces.Repositories;
@@ -33,6 +34,10 @@ namespace SmartApart.API
             // Database
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //Cloudinary
+            builder.Services.Configure<CloudinarySettings>
+                (builder.Configuration.GetSection("Cloudinary"));
 
             // JWT Authentication
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -66,12 +71,16 @@ namespace SmartApart.API
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IResidentRepository, ResidentRepository>();
             builder.Services.AddScoped<IVisitorRepository, VisitorRepository>();
+            builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
+            builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IResidentService, ResidentService>();
             builder.Services.AddScoped<IVisitorService, VisitorService>();
-
+            builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
+            builder.Services.AddScoped<IComplaintService, ComplaintService>();
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             // Controllers + Validation Filter
             builder.Services.AddControllers(options =>
