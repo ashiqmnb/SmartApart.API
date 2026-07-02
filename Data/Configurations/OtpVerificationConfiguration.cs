@@ -19,7 +19,7 @@ namespace SmartApart.API.Data.Configurations
 
             builder.Property(o => o.OtpCode)
                 .IsRequired()
-                .HasMaxLength(10);
+                .HasMaxLength(100);
 
             builder.Property(o => o.IsUsed)
                 .HasDefaultValue(false);
