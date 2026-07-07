@@ -18,6 +18,7 @@ using SmartApart.API.Repositories;
 using SmartApart.API.Services;
 using SmartApart.API.Services.BackgroundServices;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SmartApart.API
 {
@@ -115,6 +116,10 @@ namespace SmartApart.API
             builder.Services.AddControllers(options =>
             {
                 options.Filters.Add<ValidationFilter>();
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
             // FluentValidation

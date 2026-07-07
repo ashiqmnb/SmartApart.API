@@ -35,7 +35,7 @@ namespace SmartApart.API.Controllers
 
         // GET api/residents/search?q=John
         [HttpGet("search")]
-        [Authorize(Roles = "Admin,Resident")]
+        [Authorize(Roles = "Admin,Resident,Security")]
         public async Task<IActionResult> Search([FromQuery] string q)
         {
             var callerRole = GetCallerRole();
